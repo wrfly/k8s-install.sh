@@ -6,6 +6,12 @@
 bash <(curl -fSsL https://git.io/vpY6k)
 ```
 
+## Requirements
+
+- N台虚拟机,1核1G及以上, N>=1
+- Ubuntu 14.04+
+- 得联网
+
 ## Feature
 
 - 用代理的镜像仓库(`k8s-gcr.mirror.kfd.me`)替换`k8s.gcr.io`
