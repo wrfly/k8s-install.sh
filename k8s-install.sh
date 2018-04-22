@@ -23,7 +23,7 @@ apt-get update
 apt-get -y install apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | apt-key add -
 cat >/etc/apt/sources.list.d/docker.list <<EOF
-deb https://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable
+deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable
 EOF
 apt-get -y update
 apt-get -y install docker-ce
@@ -44,12 +44,12 @@ apt-get install -y apt-transport-https curl
 ## I built a reverse proxy here, but you can use aliyun for better donwload speed
 # curl -fsSL https://packagescloudgooglecoms.kfd.me/apt/doc/apt-key.gpg | apt-key add -
 # cat >/etc/apt/sources.list.d/kubernetes.list <<EOF
-# deb http://packagescloudgooglecom.kfd.me/apt/ kubernetes-$(lsb_release -cs) main
+# deb [arch=amd64] http://packagescloudgooglecom.kfd.me/apt/ kubernetes-$(lsb_release -cs) main
 # EOF
 
 curl -fsSL https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
 cat >/etc/apt/sources.list.d/kubernetes.list <<EOF
-deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-$(lsb_release -cs) main
+deb [arch=amd64] https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-$(lsb_release -cs) main
 EOF
 
 apt-get update
