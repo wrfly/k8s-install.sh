@@ -47,7 +47,7 @@ if [[ "$OS" == "CentOS" ]];then
   yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
   yum makecache fast
   yum -y install docker-ce
-  service docker start
+  systemctl enable docker && systemctl start docker  
 fi
 
 # congifure mirror and insecure registries
