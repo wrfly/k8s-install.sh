@@ -132,6 +132,8 @@ EOF
 
 # start to install
 log "we are ready to go"
+# open ports for centos
+[[ "$OS" == "CentOS" ]] && firewall-cmd --add-port=6443/tcp --add-port=10250/tcp
 kubeadm init --config=kube-admin.conf
 
 log "copy config files"
