@@ -96,7 +96,9 @@ log "turn off swap for k8s doesn't support it"
 [[ "$OS" == "Ubuntu" ]] && \
   swapoff -a && sed -i "s/exit/\# for k8s\nswapoff -a\nexit/g" /etc/rc.local
 [[ "$OS" == "CentOS" ]] && \
-  swapoff -a && echo -e "# for k8s\nswapoff -a" >> /etc/rc.local
+  swapoff -a && echo -e "# for k8s\nswapoff -a" >> /etc/rc.local && \
+  chmod +x /etc/rc.d/rc.local && \
+  systemctl enable rc-local
 chmod +x /etc/rc.local
 
 # configure kubelet for downloading pause image
