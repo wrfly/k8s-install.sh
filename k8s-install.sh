@@ -143,7 +143,8 @@ mkdir $HOME/.kube/
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
 log "init calico network"
-wget 'u.kfd.me/2C8' -qO- | sed "s/quay.io/quay-io.mirror.kfd.me/g" > calico.yaml
+CALICO_YAML="https://docs.projectcalico.org/v3.1/getting-started/kubernetes/installation/hosted/kubeadm/1.7/calico.yaml"
+wget "$CALICO_YAML" -qO- | sed "s/quay.io/quay-io.mirror.kfd.me/g" > calico.yaml
 kubectl apply -f calico.yaml
 
 [[ "$SINGLE_MASTER" == "Y" ]] && \
