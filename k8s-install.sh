@@ -24,6 +24,7 @@ fi
 # prepare
 MASTER="Y"
 SINGLE_MASTER="N"
+INSTALL_DOCKER="Y"
 read -p "Install as a master node?: " -ei $MASTER MASTER
 if [[ "$MASTER" == "Y" ]];then
   PRIMARY_IP=$(ip route get 8.8.8.8 | head -1 | awk '{print $7}')
@@ -33,21 +34,24 @@ if [[ "$MASTER" == "Y" ]];then
 fi
 
 # install docker
-log "install docker"
-if [[ "$OS" == "Ubuntu" ]];then
-  apt-get update
-  apt-get -y install apt-transport-https ca-certificates curl software-properties-common
-  curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | apt-key add -
-  add-apt-repository -u "deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
-  apt-get -y install docker-ce
-fi
-
-if [[ "$OS" == "CentOS" ]];then
-  yum install -y yum-utils device-mapper-persistent-data lvm2
-  yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-  yum makecache fast
-  yum -y install docker-ce
-  systemctl enable docker && systemctl start docker  
+read -p "Install Docker?: " -ei $INSTALL_DOCKER INSTALL_DOCKER
+if [[ "$INSTALL_DOCKER" == "Y" ]];then
+  log "install and upgrade docker"
+  if [[ "$OS" == "Ubuntu" ]];then
+    apt-get update
+    apt-get -y install apt-transport-https ca-certificates curl software-properties-common
+    curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | apt-key add -
+    add-apt-repository -u "deb [arch=amd64] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+    apt-get -y install docker-ce
+  fi
+ 
+  if [[ "$OS" == "CentOS" ]];then
+    yum install -y yum-utils device-mapper-persistent-data lvm2
+    yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+    yum makecache fast
+    yum -y install docker-ce
+    systemctl enable docker && systemctl start docker  
+  fi
 fi
 
 # congifure mirror and insecure registries
@@ -64,14 +68,14 @@ systemctl daemon-reload && systemctl restart docker
 log "install k8s"
 if [[ "$OS" == "Ubuntu" ]];then
   apt-get install -y apt-transport-https curl wget
-  ## I built a reverse proxy here, but you can use aliyun for better donwload speed
-  # curl -fsSL https://packagescloudgooglecoms.kfd.me/apt/doc/apt-key.gpg | apt-key add -
+  ## I built a reverse proxy here, but you can use aliyun for a better donwload speed
+  # curl -fsSL http://packagescloudgooglecom.kfd.me/apt/doc/apt-key.gpg | apt-key add -
   # cat >/etc/apt/sources.list.d/kubernetes.list <<EOF
   # deb [arch=amd64] http://packagescloudgooglecom.kfd.me/apt/ kubernetes-xenial main
   # EOF
   curl -fsSL https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
   add-apt-repository -u "deb [arch=amd64] https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main"  
-  apt-get install -y kubelet kubeadm kubectl
+  apt-get install -y kubelet=1.10.0-00 kubeadm=1.10.0-00 kubectl=1.10.0-00
 fi
 
 if [[ "$OS" == "CentOS" ]];then
@@ -85,7 +89,7 @@ repo_gpgcheck=1
 gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
   setenforce 0
-  yum install -y kubelet kubeadm kubectl wget
+  yum install -y kubelet-1.10.0-0 kubeadm-1.10.0-0 kubectl-1.10.0-0 wget
   systemctl enable kubelet && systemctl start kubelet
 fi
 
@@ -133,7 +137,7 @@ networking:
 EOF
 
 # start to install
-log "we are ready to go"
+log "we are ready to go; kubeadm init..."
 # open ports for centos
 [[ "$OS" == "CentOS" ]] && firewall-cmd --add-port=6443/tcp --add-port=10250/tcp
 kubeadm init --config=kube-admin.conf
