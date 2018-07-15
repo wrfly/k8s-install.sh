@@ -134,6 +134,7 @@ etcd:
 imageRepository: k8s-gcr.mirror.kfd.me
 networking:
   podSubnet: "192.168.0.0/16"
+kubernetesVersion: 1.10.5
 EOF
 
 # start to install
